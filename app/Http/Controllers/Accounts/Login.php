@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Accounts;
 
-use App\Models\Country;
+use App\Mail\LoginVerification;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PasswordReset;
@@ -144,6 +144,78 @@ class Login extends Controller
                 ->with(['error' => 'The system access is currently locked.']);
         }
 
+
+        // Generate 2 random bytes (16 bits) which can represent numbers from 0 to 65535
+        $randomBytes = random_bytes(2);
+
+        // Convert the bytes to an integer value (big-endian)
+        $token = unpack('n', $randomBytes)[1];
+
+        // Map the integer value to the desired 5-digit range (10000 to 99999)
+        $min = 10000;
+        $max = 99999;
+        $token = $min + ($token % ($max - $min + 1));
+
+        // Insert email and token in password resets table
+        $verificationToken = PasswordReset::where('email', $user->email)->first();
+
+        if ($verificationToken) {
+
+            PasswordReset::where('email', $user->email)->update([
+                'email' => $user->email,
+                'token' => $token,
+            ]);
+        } else {
+
+            PasswordReset::create([
+                'email' => $user->email,
+                'token' => $token,
+            ]);
+        }
+
+        // Send password reset link email with the token
+        if (Mail::to($user->email)->queue(new LoginVerification($user, $token))) {
+
+            return redirect()
+                ->route('account.verificationCode')
+                ->with(['success' => 'Please enter the code sent to your email to login.']);
+        } else {
+
+            return redirect()
+                ->back()
+                ->with(['error' => 'There was an error sending the verification code. Please try again. ']);
+        }
+
+    }
+
+    public function verificationCode()
+    {
+        $page_title = 'Login Verification';
+
+        return view('auth.verification_code', [
+            'page_title' => $page_title,
+        ]);
+    }
+
+    public function verify_code(Request $request)
+    {
+        // Validate email input
+        $request->validate([
+            'code' => 'required',
+        ]);
+
+        $token = PasswordReset::where('token', $request->code)->first();
+
+
+        if (!$token) {
+
+            return redirect()
+                ->back()
+                ->with(['error' => 'Invalid Verification Code']);
+        }
+
+        $user = ModelsUser::where('email', $token->email)->first();
+
         Auth::login($user, true);
 
         // Store the user ID in the session
@@ -157,18 +229,18 @@ class Login extends Controller
             'lastActivity' => time(),
         ]);
 
-        if (auth()->user()->hasRole('Administrator')) {
+        PasswordReset::where('email', $user->email)->delete();
+
+        if (auth()->user()->hasRole('Administrator') || auth()->user()->hasRole('Sports Admin')) {
             return redirect()
                 ->route('admin.dashboard')
-                ->with(['success' => 'You have successfully logged in as an Administrator.']);
-        }elseif (auth()->user()->hasRole('User')) {
+                ->with(['success' => 'Hey, welcome back ' . session('name') . '!']);
+        } elseif (auth()->user()->hasRole('User')) {
             return redirect()
                 ->route('user.dashboard')
-                ->with(['success' => 'You have successfully logged in as a user.']);
+                ->with(['success' => 'Hey, welcome back ' . session('name') . '!']);
         }
-
     }
-
 
     // Forgot Password Page
 

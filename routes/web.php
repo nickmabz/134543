@@ -23,6 +23,9 @@ Route::get('/', [Login::class, 'register'])->name('account.register');
 Route::get('/auth/login', [Login::class, 'index'])->name('account.login');
 Route::post('/auth/user/login', [Login::class, 'login2'])->name('login.user');
 
+Route::get('/auth/login_verification', [Login::class, 'verificationCode'])->name('account.verificationCode');
+Route::post('/auth/login_verification/verify', [Login::class, 'verify_code'])->name('account.verify_code');
+
 Route::get('/auth/logout', [Login::class, 'logout'])->name('account.logout');
 
 Route::get('/auth/forgot_password', [Login::class, 'forgotPassword'])->name('account.forgotPassword');
