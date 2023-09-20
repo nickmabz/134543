@@ -41,7 +41,7 @@ class Login extends Controller
         $validatedData = $request->validate([
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required',
+            'email' => 'required|unique:users',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password'
         ]);
