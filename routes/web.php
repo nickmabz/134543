@@ -52,6 +52,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 //  Agent Dashboard Routes
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::post('/predict/parking', [UserDashboardController::class, 'predict'])->name('predict.parking');
 
     Route::get('/transportation', [TransportationController::class, 'index'])->name('user.transportation');
     Route::post('/transportation/add', [TransportationController::class, 'store'])->name('transportation.store');

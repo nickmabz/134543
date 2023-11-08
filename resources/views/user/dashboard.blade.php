@@ -5,241 +5,134 @@
     <div class="page-wrapper">
         <div class="page-content">
 
-            <div class="dash-wrapper bg-dark">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
 
-
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}"><i
+                                        class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Smart Parking Prediction</li>
+                        </ol>
+                    </nav>
+                </div>
 
             </div>
+            <!--end breadcrumb-->
 
-            {{-- <div class="row row-cols-1 row-cols-xl-2">
-                <div class="col d-flex">
-                    <div class="card radius-10 w-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <h6 class="mb-0">Sales Overview</h6>
-                                </div>
-                                <div class="dropdown ms-auto">
-                                    <button class="btn btn-white btn-sm radius-10 dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        This Month
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li><a class="dropdown-item" href="#">This Week</a></li>
-                                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                                        <li><a class="dropdown-item" href="#">This Year</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div id="chart6"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col d-flex">
-                    <div class="card radius-10 w-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <h6 class="mb-0">Visitor Status</h6>
-                                </div>
-                                <div class="d-flex align-items-center ms-auto font-13 gap-2">
-                                    <span class="border px-1 rounded cursor-pointer"><i
-                                            class='bx bxs-circle text-primary me-1'></i>New Visitor</span>
-                                    <span class="border px-1 rounded cursor-pointer"><i
-                                            class='bx bxs-circle text-sky-light me-1'></i>Old Visitor</span>
-                                </div>
-                            </div>
-                            <div id="chart7"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--end row-->
+            <div class="card">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Parking Prediction</h5>
+                    <hr />
+                    @include('layouts.alerts_block')
+                    <div class="form-body mt-4">
+                        <div class="row">
 
+                            <div class="col-lg-4">
+                                <div class="border border-3 p-4 rounded">
 
+                                    <form action="{{ route('predict.parking') }}" method="POST">
+                                        @csrf
+                                        <div class="row g-3">
+                                            <!-- Parking Location -->
+                                            <div class="col-md-12">
+                                                <label for="inputLocation" class="form-label">Parking Location</label>
+                                                <select class="form-select @error('location') is-invalid @enderror"
+                                                    id="inputLocation" name="location">
+                                                    <option value="">-- Select Parking Location --</option>
+                                                    <option value="BHMBCCMKT01">Holy Family Basilica</option>
+                                                    <!-- Add other parking locations here -->
+                                                </select>
+                                                @error('location')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
-            <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
-                <div class="col d-flex">
-                    <div class="card radius-10 p-0 w-100 bg-transparent shadow-none">
-                        <div class="card radius-10">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <p class="mb-0">New Sessions</p>
-                                        <h5 class="mb-0">54.6%</h5>
-                                    </div>
-                                    <div class="widgets-icons bg-light-primary text-primary ms-auto"><i
-                                            class="bx bxs-cookie"></i></div>
-                                </div>
-                                <div id="chart8"></div>
-                            </div>
-                        </div>
-                        <div class="card radius-10">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <p class="mb-0">Average Pages</p>
-                                        <h5 class="mb-0">38.5%</h5>
-                                    </div>
-                                    <div class="widgets-icons bg-light-danger text-danger ms-auto"><i
-                                            class="bx bxs-bookmark-alt-plus"></i></div>
-                                </div>
-                                <div id="chart9"></div>
-                            </div>
-                        </div>
-                        <div class="card radius-10 mb-0">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <p class="mb-0">Cloud Download</p>
-                                        <h5 class="mb-0">24.5K</h5>
-                                    </div>
-                                    <div class="widgets-icons bg-light-success text-success ms-auto"><i
-                                            class="bx bxs-cloud-download"></i></div>
-                                </div>
-                                <div id="chart10"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col d-flex">
-                    <div class="card radius-10 w-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <h6 class="mb-0">Goal Statistics</h6>
-                                </div>
-                                <div class="font-22 ms-auto"><i class="bx bx-dots-horizontal-rounded"></i>
-                                </div>
-                            </div>
-                            <div id="chart11"></div>
-                            <div class="row align-items-center py-2">
-                                <div class="col-auto">
-                                    <p class="mb-0">Sales</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">1580</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">875</p>
-                                </div>
-                                <div class="col">
-                                    <div class="progress radius-10 mb-0" style="height:6px;">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 85%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end row-->
+                                            <!-- Date -->
+                                            <div class="col-md-12">
+                                                <label for="inputDate" class="form-label">Date</label>
+                                                <input type="date"
+                                                    class="form-control @error('date') is-invalid @enderror" id="inputDate"
+                                                    name="date">
+                                                @error('date')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
-                            <div class="row align-items-center py-2">
-                                <div class="col-auto">
-                                    <p class="mb-0">Users</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">1852</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">356</p>
-                                </div>
-                                <div class="col">
-                                    <div class="progress radius-10 mb-0" style="height:6px;">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 65%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end row-->
+                                            <!-- Time -->
+                                            <div class="col-md-12">
+                                                <label for="inputTime" class="form-label">Time</label>
+                                                <input type="time"
+                                                    class="form-control @error('time') is-invalid @enderror" id="inputTime"
+                                                    name="time">
+                                                @error('time')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
-                            <div class="row align-items-center py-2">
-                                <div class="col-auto">
-                                    <p class="mb-0">Visits</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">1280</p>
-                                </div>
-                                <div class="col-auto">
-                                    <p class="mb-0">867</p>
-                                </div>
-                                <div class="col">
-                                    <div class="progress radius-10 mb-0" style="height:6px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 45%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end row-->
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-lg-12 d-flex">
-                    <div class="card radius-10 p-0 w-100 p-3">
-                        <div class="card radius-10 shadow-none bg-transparent border">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
-                                    <div id="chart12"></div>
-                                    <div class="">
-                                        <p class="mb-0 d-flex align-items-center"><i
-                                                class='bx bx-male text-danger fs-4'></i><span
-                                                class="mx-2">Male</span><span>65%</span></p>
-                                        <p class="mb-0 d-flex align-items-center"><i
-                                                class='bx bx-female text-primary fs-4'></i><span
-                                                class="mx-2">Male</span><span>35%</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card radius-10 mb-0 shadow-none bg-transparent mb-0 border">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-4">
-                                    <div>
-                                        <h6 class="mb-0">Device Type</h6>
-                                    </div>
-                                    <div class="font-22 ms-auto"><i class="bx bx-dots-horizontal-rounded"></i>
-                                    </div>
-                                </div>
-                                <div class="row row-cols-3 g-3">
-                                    <div class="col">
-                                        <div class="d-flex gap-2">
-                                            <h4 class="mb-1 d-flex">61 <span class="align-self-start fs-6">%</span></h4>
-                                            <p class="mb-0 align-self-center text-success">(+8.4%)</p>
+                                            <!-- Submit Button -->
+                                            <div class="col-12">
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-primary">Get Prediction</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <p class="mb-0 d-flex align-items-center"><i
-                                                class='bx bxs-circle text-info fs-6'></i><span
-                                                class="mx-2">Android</span></p>
-                                    </div>
-                                    <div class="col">
-                                        <div class="d-flex gap-2">
-                                            <h4 class="mb-1 d-flex">28 <span class="align-self-start fs-6">%</span></h4>
-                                            <p class="mb-0 align-self-center text-danger">(-1.9%)</p>
-                                        </div>
-                                        <p class="mb-0 d-flex align-items-center"><i
-                                                class='bx bxs-circle text-success fs-6'></i><span
-                                                class="mx-2">iOS</span></p>
-                                    </div>
-                                    <div class="col">
-                                        <div class="d-flex gap-2">
-                                            <h4 class="mb-1 d-flex">11 <span class="align-self-start fs-6">%</span></h4>
-                                            <p class="mb-0 align-self-center text-success">(+6.8%)</p>
-                                        </div>
-                                        <p class="mb-0 d-flex align-items-center"><i
-                                                class='bx bxs-circle text-warning fs-6'></i><span
-                                                class="mx-2">Other</span></p>
-                                    </div>
-                                </div>
+                                    </form>
 
-                                <div class="progress radius-10 mt-4" style="height: 10px">
-                                    <div class="progress-bar bg-info" role="progressbar" style="width: 45%"
-                                        aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 30%"
-                                        aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 25%"
-                                        aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-8">
+
+                                <div class="card">
+                                    <div class="card-body">
+
+                                        <div class="table-responsive">
+                                            <table class="table mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Location</th>
+                                                        <th>Date</th>
+                                                        <th>Time</th>
+                                                        <th>Predicted Occupancy</th>
+                                                        <th>Percentage Occupancy</th>
+                                                        <th>Remaining Spaces</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($userPredictions as $prediction)
+                                                    <tr>
+                                                        <td>{{ $prediction->location }}</td>
+                                                        <td>{{ $prediction->date->format('Y-m-d') }}</td>
+                                                        <td>{{ $prediction->time->format('H:i') }}</td>
+                                                        <td>{{ $prediction->predicted_occupancy }}</td>
+                                                        <td>{{ $prediction->percentage_occupancy }}%</td>
+                                                        <td>{{ $prediction->remaining_spaces }}</td>
+                                                        <td>
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+
+                                    </div>
                                 </div>
 
                             </div>
                         </div>
+                        <!--end row-->
                     </div>
                 </div>
             </div>
-            <!--end row--> --}}
+
 
 
         </div>
