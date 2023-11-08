@@ -12,11 +12,20 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Services\PhpMailerService;
+
 use Illuminate\Validation\ValidationException;
 
 
 class Login extends Controller
 {
+    protected $mailer;
+
+    public function __construct(PhpMailerService $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
     public function index()
     {
         $page_title = 'Login';
@@ -36,7 +45,7 @@ class Login extends Controller
         ]);
     }
 
-    public function registerUser(Request $request)
+    public function registerUser(Request $request, PhpMailerService $mailer)
     {
         $validatedData = $request->validate([
             'first_name' => 'required',
@@ -79,28 +88,28 @@ class Login extends Controller
             ]);
         }
 
-//         Send password reset link email with the token
-         if (Mail::send('emails.agent-registration', ['token' => $token, 'user' => $user], function ($message) use ($request) {
-             $message->to($request->email);
-             $message->subject("Account Creation Notification");
-         })) {
+        // Send password reset link email with the token using PhpMailerService
+        $subject = 'Account Creation Notification';
+        $body = "Hello, { $user->first_name }. Thanks for registering with us.";
+        $response = $mailer->sendMail($user->email, $subject, $body);
 
-
+        if ($response == 'Message has been sent') {
+            return redirect()
+                ->route('account.register')
+                ->with(['success' => 'Hello, ' . $user->first_name . ' . Thanks for registering with us. ']);
+        } else {
 
             return redirect()
-            ->route('account.register')
-            ->with(['success' => 'Hello, ' . $user->first_name . ' . Thanks for registering with us. ']);
-         } else {
+                ->back()
+                ->with(['error' => 'There was an error sending the email. Please try again. ']);
+        }
 
-             return redirect()
-                 ->back()
-                 ->with(['error' => 'There was an error sending the email. Please try again. ']);
-         }
+
 
     }
 
     // Login Attempt
-    public function login2(Request $request)
+    public function login2(Request $request, PhpMailerService $mailer)
     {
         $validatedData = $request->validate([
             'email' => 'required',
@@ -174,18 +183,21 @@ class Login extends Controller
         }
 
         // Send password reset link email with the token
-        if (Mail::to($user->email)->queue(new LoginVerification($user, $token))) {
 
+        // Send password reset link email with the token using PhpMailerService
+        $subject = 'Login Verification Code';
+        $body = "Your verification code is: {$token}";
+        $response = $mailer->sendMail($user->email, $subject, $body);
+
+        if ($response == 'Message has been sent') {
             return redirect()
                 ->route('account.verificationCode')
                 ->with(['success' => 'Please enter the code sent to your email to login.']);
         } else {
-
             return redirect()
                 ->back()
-                ->with(['error' => 'There was an error sending the verification code. Please try again. ']);
+                ->with(['error' => 'There was an error sending the verification code. Please try again.']);
         }
-
     }
 
     public function verificationCode()
@@ -277,20 +289,18 @@ class Login extends Controller
 
             // Insert email and token in password resets table
             $passwordResetToken = PasswordReset::where('email', $request->email)->first();
-            if($passwordResetToken){
+            if ($passwordResetToken) {
 
                 PasswordReset::where('email', $request->email)->update([
                     'email' => $request->email,
                     'token' => $token,
                 ]);
-
-            }else{
+            } else {
 
                 PasswordReset::create([
                     'email' => $request->email,
                     'token' => $token,
                 ]);
-
             }
 
 
@@ -322,12 +332,11 @@ class Login extends Controller
 
         $user = PasswordReset::where('token', $token)->first();
 
-        if(! $user){
+        if (!$user) {
 
             return redirect()
-                    ->back()
-                    ->with(['error' => 'Password reset token is invalid!']);
-
+                ->back()
+                ->with(['error' => 'Password reset token is invalid!']);
         }
 
         $email = $user->email;
@@ -360,10 +369,9 @@ class Login extends Controller
             $user->password = Hash::make($request->password);
 
 
-            if($user->save()){
+            if ($user->save()) {
 
                 PasswordReset::where('email', $user->email)->delete();
-
             }
 
             // Return a success message
@@ -392,7 +400,4 @@ class Login extends Controller
             ->header('Pragma', 'no-cache')
             ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
-
-
-
 }
