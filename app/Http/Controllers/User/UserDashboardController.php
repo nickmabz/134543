@@ -4,10 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Models\User;
 use App\Models\Prediction;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\ParkingLocation;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class UserDashboardController extends Controller
 {
@@ -19,6 +20,8 @@ class UserDashboardController extends Controller
 
         $user = User::find($userId);
 
+        $parkingLocations = ParkingLocation::all();
+
 
         $userPredictions = Prediction::where('user_id', Auth::id())->get();
 
@@ -26,6 +29,7 @@ class UserDashboardController extends Controller
             'page_title' => $page_title,
             'user' => $user,
             'userPredictions' => $userPredictions,
+            'parkingLocations' => $parkingLocations,
         ]);
     }
 

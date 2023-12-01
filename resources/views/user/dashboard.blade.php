@@ -39,16 +39,19 @@
                                             <!-- Parking Location -->
                                             <div class="col-md-12">
                                                 <label for="inputLocation" class="form-label">Parking Location</label>
-                                                <select class="form-select @error('location') is-invalid @enderror"
-                                                    id="inputLocation" name="location">
+                                                <select class="form-select @error('location') is-invalid @enderror" id="inputLocation" name="location">
                                                     <option value="">-- Select Parking Location --</option>
-                                                    <option value="BHMBCCMKT01">Holy Family Basilica</option>
-                                                    <!-- Add other parking locations here -->
+                                                    @foreach($parkingLocations as $parkingLocation)
+                                                        <option value="{{ $parkingLocation->system_code }}" @if(old('location') == $parkingLocation->system_code) selected @endif>
+                                                            {{ $parkingLocation->location }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                                 @error('location')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
+
 
                                             <!-- Date -->
                                             <div class="col-md-12">
@@ -114,7 +117,7 @@
                                                         <td>{{ $prediction->percentage_occupancy }}%</td>
                                                         <td>{{ $prediction->remaining_spaces }}</td>
                                                         <td>
-                                                            
+
                                                         </td>
                                                     </tr>
                                                     @endforeach
