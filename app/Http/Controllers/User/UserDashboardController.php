@@ -19,13 +19,6 @@ class UserDashboardController extends Controller
 
         $user = User::find($userId);
 
-        // Retrieve the user's transportation carbon emission and energy emissions
-        $user = User::find($userId);
-        $transportationEmissions = $user->transportation_carbon_emission;
-        $energyEmissions = $user->energy_emissions;
-
-        // Calculate the total carbon footprint by summing up the emissions
-        $totalCarbonFootprint = $transportationEmissions + $energyEmissions;
 
         $userPredictions = Prediction::where('user_id', Auth::id())->get();
 
@@ -60,7 +53,7 @@ class UserDashboardController extends Controller
         ];
 
         // Send a POST request to the FastAPI endpoint
-        $response = Http::post('http://0.0.0.0:8000/v1/pred/predict', $payload);
+        $response = Http::post('http://127.0.0.1:8001/v1/pred/predict', $payload);
 
         // Check for a successful response
         if ($response->successful()) {
