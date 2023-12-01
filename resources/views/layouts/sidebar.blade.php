@@ -25,6 +25,14 @@
         </li>
 
         <li>
+            <a href="{{ route('admin.parkinglocations')}}">
+                <div class="parent-icon"><i class='bx bx-car'></i>
+                </div>
+                <div class="menu-title">Parking Locations</div>
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('admin.users')}}">
                 <div class="parent-icon"><i class='bx bx-home'></i>
                 </div>

@@ -11,7 +11,7 @@
                 <div class="ps-3">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}"><i
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i
                                         class="bx bx-home-alt"></i></a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">Registered Users</li>
@@ -43,7 +43,6 @@
                                                     <tr>
                                                         <th>Name</th>
                                                         <th>Email</th>
-                                                        <th>Mobile</th>
 
                                                     </tr>
                                                 </thead>
@@ -52,7 +51,6 @@
                                                     <tr>
                                                         <td><a href="{{ route('admin.viewUser', $user->id)}}">{{ $user->first_name .' ' . $user->last_name }}</a></td>
                                                         <td>{{ $user->email }}</td>
-                                                        <td>{{ $user->mobile }}</td>
 
                                                     </tr>
                                                     @endforeach

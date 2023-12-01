@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Accounts\Login;
 use App\Http\Controllers\Admin\AdminDashboard;
 use App\Http\Controllers\User\EnergyController;
+use App\Http\Controllers\Admin\ParkingController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\TransportationController;
 
@@ -44,9 +45,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/users', [AdminDashboard::class, 'user'])->name('admin.users');
     Route::get('/users/view/{user}', [AdminDashboard::class, 'viewUser'])->name('admin.viewUser');
 
-    Route::get('/transportation', [AdminDashboard::class, 'transport'])->name('admin.transportation');
+    Route::get('/parking_locations', [ParkingController::class, 'index'])->name('admin.parkinglocations');
+    Route::post('/parking_locations', [ParkingController::class, 'store'])->name('admin.parkinglocations.store');
+    Route::get('/parking_locations/{parkingLocation}/edit', [ParkingController::class, 'edit'])->name('admin.parkinglocations.edit');
+    Route::put('/parking_locations/{parkingLocation}', [ParkingController::class, 'update'])->name('admin.parkinglocations.update');
+    Route::delete('/parking_locations/delete/{parkingLocation}', [ParkingController::class, 'delete'])->name('admin.parkinglocations.destroy');
 
-    Route::get('/energy', [AdminDashboard::class, 'energy'])->name('admin.energy');
 });
 
 //  Agent Dashboard Routes
@@ -54,9 +58,5 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::post('/predict/parking', [UserDashboardController::class, 'predict'])->name('predict.parking');
 
-    Route::get('/transportation', [TransportationController::class, 'index'])->name('user.transportation');
-    Route::post('/transportation/add', [TransportationController::class, 'store'])->name('transportation.store');
 
-    Route::get('/energy', [EnergyController::class, 'index'])->name('user.energy');
-    Route::post('/energy/add', [EnergyController::class, 'store'])->name('energy.store');
 });
